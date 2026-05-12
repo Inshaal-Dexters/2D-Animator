@@ -11,16 +11,20 @@ const MuhammadBangloriaPage = () => {
 
   const [user, setUser] = useState({});
 
-  // useEffect(() => {
-    // const handleFetchUser = async () => {
-    //   const res = await axios.get(
-    //     "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=UCXHi74ZfE_0mSFF355macXg&key=AIzaSyBwtRnNhleRwBatK5G352BkSZKTLit5vrs",
-    //   ).catch((err) => console.log(err));
-    //   setUser(res.data.items[0]);
-    // };
+  const channelId = "UCXHi74ZfE_0mSFF355macXg";
 
-    // handleFetchUser();
-  // }, [user]);
+  // useEffect(() => {
+  //   const handleFetchYTChannel = async () => {
+  //     const res = await axios.get(
+  //       "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=UCXHi74ZfE_0mSFF355macXg&key=AIzaSyBwtRnNhleRwBatK5G352BkSZKTLit5vrs",
+  //     ).catch((err) => console.log(err));
+  //     setUser(res.data.items[0]);
+
+  //     console.log(res.data)
+  //   };
+
+  //   handleFetchYTChannel();
+  // }, []);
 
   return (
     <div className="animators-section w-full max-w-7xl pt-17.5">

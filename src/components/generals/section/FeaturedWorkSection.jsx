@@ -1,31 +1,30 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  youtubeButtonData,
-  youtubeCardData,
-} from "@/data/cards/YoutubeCardData";
-import { featuredWorkTabData } from "@/data/tabs/FeaturedWorkTabData";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 const FeaturedWorkSection = () => {
-  const [activeButton, setActiveButton] = useState("all");
+  const channelId = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
+  const channelKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
+  const [activeButton, setActiveButton] = useState("");
   const [playlistDetail, setPlaylistDetail] = useState({});
+  const [ytVideos, setYTVideos] = useState([]);
+  const [numberOfVideos, setNumberOfVideos] = useState(6);
 
   const handleButtonClick = (index) => {
     setActiveButton(index);
+    setButtonId(index);
+    setPlaylistId(index);
+    setNumberOfVideos(6);
+    setLoadedVideos(6);
   };
 
   const [buttonId, setButtonId] = useState("all");
-
-  const handleAddButtonId = (id) => {
-    setButtonId(id);
-    if (id == "all") {
-      setLoadedVideos(6);
-    }
-  };
+  const [playlistId, setPlaylistId] = useState(
+    "PLyAdSp34JU7xYEnuPeVDC9lWWf1vOzRCo",
+  );
 
   const [loadedVideos, setLoadedVideos] = useState(6);
   const [showLoadMore, setShowLoadMore] = useState(true);
@@ -35,21 +34,35 @@ const FeaturedWorkSection = () => {
     setLoadedVideos(newLoadedVideos);
   };
 
-  // useEffect(() => {
-  //   const fetchYTPlaylist = async () => {
-  //     const res = await axios
-  //       .get(
-  //         `https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=PLojnlzpK9oWLb6vV9961NInwIjSjkL5y_&key=AIzaSyBwtRnNhleRwBatK5G352BkSZKTLit5vrs`,
-  //       )
-  //       .catch((err) => console.log(err));
+  useEffect(() => {
+    const fetchYTPlaylist = async () => {
+      const res = await axios
+        .get(
+          `https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&channelId=${channelId}&maxResults=25&key=${channelKey}`,
+        )
+        .catch((err) => console.log(err));
 
-  //     console.log(res.data);
-  //     setPlaylistDetail(res.data);
-  //     console.log(res.data.items[0].snippet);
-  //   };
+      setPlaylistDetail(res.data);
+      setActiveButton(playlistId || res.data.items[0].id);
+    };
 
-  //   fetchYTPlaylist();
-  // }, []);
+    fetchYTPlaylist();
+
+    const fetchYTVideos = async () => {
+      const res = await axios
+        .get(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&channelId=${channelId}&playlistId=${playlistId}&maxResults=50&key=${channelKey}`,
+        )
+        .catch((err) => console.log(err));
+
+      // await console.log(res.data.items?.map((_, index) => index + 1))
+      await setNumberOfVideos(res.data.items.length);
+      setYTVideos(res.data);
+      console.log(numberOfVideos);
+    };
+
+    fetchYTVideos();
+  }, [playlistId, numberOfVideos]);
 
   return (
     <>
@@ -60,38 +73,25 @@ const FeaturedWorkSection = () => {
               Featured Work
             </h2>
           </div>
-          <div className="tabs-area w-full flex items-center gap-2">
-            {playlistDetail?.items?.map((item) => {
-              return (
-                <div key={item.id} onClick={() => handleButtonClick(item.id)}>
-                  <Button
-                    className={`cursor-pointer py-5 ${activeButton === item.id ? "bg-primary" : "bg-card hover:bg-card"}`}
-                  >
-                    {item.snippet.title}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
           <div className="bottom w-full flex flex-col gap-8">
-            <div className="buttons-area w-full grid grid-cols-1 md:grid-cols-3 xl:flex xl:items-center gap-3">
-              {youtubeButtonData &&
-                youtubeButtonData.map((item, index) => {
-                  return (
-                    <>
-                      <Button
-                        key={index}
-                        onClick={() => handleAddButtonId(item.buttonId)}
-                        className={`cursor-pointer py-5 ${buttonId === item.buttonId ? "bg-primary" : "bg-card hover:bg-primary"}`}
-                      >
-                        {item.name}
-                      </Button>
-                    </>
-                  );
-                })}
+            <div
+              className="buttons-area w-full grid grid-cols-1 md:grid-cols-3 lg:flex xl:items-center
+             flex-wrap gap-3"
+            >
+              {playlistDetail?.items?.map((item) => {
+                return (
+                  <div key={item.id} onClick={() => handleButtonClick(item.id)}>
+                    <Button
+                      className={`w-full lg:w-fit cursor-pointer py-5 ${activeButton === item.id ? "bg-primary" : "bg-card hover:bg-card"}`}
+                    >
+                      <span className="line-clamp-1">{item.snippet.title}</span>
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
             <div className="videos-area w-full">
-              {youtubeCardData &&
+              {/* {youtubeCardData &&
                 youtubeCardData.map((item, index) => {
                   return (
                     <>
@@ -116,10 +116,10 @@ const FeaturedWorkSection = () => {
                                       // height="309.375"
                                       src={`https://www.youtube.com/embed/${item.link}`}
                                       title={item.title}
-                                      frameborder="0"
+                                      frameBorder="0"
                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                      referrerpolicy="strict-origin-when-cross-origin"
-                                      allowfullscreen
+                                      referrerPolicy="strict-origin-when-cross-origin"
+                                      allowFullScreen
                                       className={`rounded-xl h-[309.375px]`}
                                     ></iframe>
                                   </div>
@@ -142,168 +142,42 @@ const FeaturedWorkSection = () => {
                           </div>
                         </div>
                       )}
-                      {item.playlist == "Motion Graphics" && (
-                        <div
-                          className={`item ${
-                            buttonId == "motion-graphics" ? "flex" : "hidden"
-                          } flex-col gap-5`}
-                        >
-                          <div className="video grid grid-cols-3 gap-5">
-                            {item.videos.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className={`${index <= 2 ? "flex bg-card rounded-xl" : "hidden"}`}
-                                >
-                                  <iframe
-                                    key={index}
-                                    width="100%"
-                                    height="309.375"
-                                    src={`https://www.youtube.com/embed/${item.link}`}
-                                    title={item.title}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allowfullscreen
-                                    className={`rounded-xl`}
-                                  ></iframe>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {item.playlist == "Explainer Videos" && (
-                        <div
-                          className={`item ${
-                            buttonId == "explainer-videos" ? "flex" : "hidden"
-                          } flex-col gap-5`}
-                        >
-                          <div className="video grid grid-cols-3 gap-5">
-                            {item.videos.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className={`${index <= 2 ? "flex bg-card rounded-xl" : "hidden"}`}
-                                >
-                                  <iframe
-                                    key={index}
-                                    width="100%"
-                                    height="309.375"
-                                    src={`https://www.youtube.com/embed/${item.link}`}
-                                    title={item.title}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allowfullscreen
-                                    className={`rounded-xl`}
-                                  ></iframe>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {item.playlist == "Isometric Animation" && (
-                        <div
-                          className={`item ${
-                            buttonId == "isometric-animation"
-                              ? "flex"
-                              : "hidden"
-                          } flex-col gap-5`}
-                        >
-                          <div className="video grid grid-cols-3 gap-5">
-                            {item.videos.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className={`${index <= 2 ? "flex bg-card rounded-xl" : "hidden"}`}
-                                >
-                                  <iframe
-                                    key={index}
-                                    width="100%"
-                                    height="309.375"
-                                    src={`https://www.youtube.com/embed/${item.link}`}
-                                    title={item.title}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allowfullscreen
-                                    className={`rounded-xl`}
-                                  ></iframe>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {item.playlist == "Whiteboard Animation" && (
-                        <div
-                          className={`item ${
-                            buttonId == "whiteboard-animation"
-                              ? "flex"
-                              : "hidden"
-                          } flex-col gap-5`}
-                        >
-                          <div className="video grid grid-cols-3 gap-5">
-                            {item.videos.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className={`${index <= 2 ? "flex bg-card rounded-xl" : "hidden"}`}
-                                >
-                                  <iframe
-                                    key={index}
-                                    width="100%"
-                                    height="309.375"
-                                    src={`https://www.youtube.com/embed/${item.link}`}
-                                    title={item.title}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allowfullscreen
-                                    className={`rounded-xl`}
-                                  ></iframe>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {item.playlist == "2D Animated Video" && (
-                        <div
-                          className={`item ${
-                            buttonId == "2d-animated-video" ? "flex" : "hidden"
-                          } flex-col gap-5`}
-                        >
-                          <div className="video grid grid-cols-3 gap-5">
-                            {item.videos.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className={`${index <= 2 ? "flex bg-card rounded-xl" : "hidden"}`}
-                                >
-                                  <iframe
-                                    key={index}
-                                    width="100%"
-                                    height="309.375"
-                                    src={`https://www.youtube.com/embed/${item.link}`}
-                                    title={item.title}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allowfullscreen
-                                    className={`rounded-xl`}
-                                  ></iframe>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
                     </>
                   );
+                })} */}
+              <div className="video grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {ytVideos?.items?.slice(0, loadedVideos).map((item, index) => {
+                  return (
+                    <div key={index} className={`flex bg-card rounded-xl`}>
+                      <iframe
+                        key={index}
+                        width="100%"
+                        height="309.375"
+                        src={`https://www.youtube.com/embed/${item?.snippet?.resourceId?.videoId}`}
+                        title={item?.snippet?.title}
+                        thumbnail={item?.snippet?.thumbnails?.high?.url}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                        className={`rounded-xl`}
+                      ></iframe>
+                    </div>
+                  );
                 })}
+              </div>
+              <div
+                onClick={loadMoreVideos}
+                className={`button w-full ${ numberOfVideos > 6 ? "flex" : "hidden" } items-center justify-center mt-8`}
+              >
+                <Button
+                  className={`cursor-pointer py-5 ${
+                    loadedVideos == 20 && "hidden"
+                  }`}
+                >
+                  Load More
+                </Button>
+              </div>
             </div>
           </div>
         </div>
