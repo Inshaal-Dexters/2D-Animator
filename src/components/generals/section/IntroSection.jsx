@@ -22,11 +22,11 @@ const IntroSection = ({ user }) => {
               Hi, I'm{" "}
               <span className="text-primary">
                 {user?.snippet ? (
-                  // user?.snippet?.title
-                  "Mohammad Bangloria"
+                  user?.snippet?.title
+                  // "Mohammad Bangloria"
                 ) : (
-                  // <Skeleton className="h-6 w-70 my-2 mb-1" />
-                  "Mohammad Bangloria"
+                  <Skeleton className="h-6 w-70 my-2 mb-1" />
+                  // "Mohammad Bangloria"
                 )}
               </span>
             </h1>

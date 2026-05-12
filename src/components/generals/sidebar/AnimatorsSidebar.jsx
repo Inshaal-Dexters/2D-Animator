@@ -65,19 +65,22 @@ const AnimatorsSidebar = () => {
 
   const [user, setUser] = useState({});
 
-  // useEffect(() => {
-    // const handleFetchUser = async () => {
-    //   const res = await axios
-    //     .get(
-    //       "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=UCXHi74ZfE_0mSFF355macXg&key=AIzaSyBwtRnNhleRwBatK5G352BkSZKTLit5vrs",
-    //     )
-    //     .catch((err) => console.log(err));
+  const channelId = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
+  const channelKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
-    //   setUser(res.data.items[0]);
-    // };
+  useEffect(() => {
+    const handleFetchUser = async () => {
+      const res = await axios
+        .get(
+          `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelId}&key=${channelKey}`,
+        )
+        .catch((err) => console.log(err));
 
-    // handleFetchUser();
-  // }, [user]);
+      setUser(res.data.items[0]);
+    };
+
+    handleFetchUser();
+  }, [user]);
 
 
   return (
@@ -107,11 +110,11 @@ const AnimatorsSidebar = () => {
           <div className="name-area mt-1">
             <h3 className="text-lg 2xl:text-xl font-semibold text-center">
               {user?.snippet ? (
-                // user?.snippet?.title
-                "Mohammad Bangloria"
+                user?.snippet?.title
+                // "Mohammad Bangloria"
               ) : (
-                // <Skeleton className="h-4 w-45 my-2 mb-1" />
-                "Mohammad Bangloria"
+                <Skeleton className="h-4 w-45 my-2 mb-1" />
+                // "Mohammad Bangloria"
               )}
             </h3>
           </div>
@@ -120,8 +123,8 @@ const AnimatorsSidebar = () => {
               {user?.snippet ? (
                 "Product Designer"
               ) : (
-                // <Skeleton className="h-4 w-34 my-1" />
-                "Product Designer"
+                <Skeleton className="h-4 w-34 my-1" />
+                // "Product Designer"
               )}
             </span>
           </div>
@@ -129,15 +132,15 @@ const AnimatorsSidebar = () => {
             {user?.snippet ? (
               <MapPin className="size-4 2xl:size-5 text-muted-foreground" />
             ) : (
-              // <Skeleton className="h-4 w-4 my-1 rounded-full" />
-              <MapPin className="size-4 2xl:size-5 text-muted-foreground" />
+              <Skeleton className="h-4 w-4 my-1 rounded-full" />
+              // <MapPin className="size-4 2xl:size-5 text-muted-foreground" />
             )}
             <span className="text-muted-foreground text-center text-sm 2xl:text-base">
               {user?.snippet ? (
                 "United States"
               ) : (
-                // <Skeleton className="h-4 w-20 my-1" />
-                "United States"
+                <Skeleton className="h-4 w-20 my-1" />
+                // "United States"
               )}
             </span>
           </div>
@@ -150,8 +153,8 @@ const AnimatorsSidebar = () => {
                   {user?.snippet ? (
                     item.numbers
                   ) : (
-                    // <Skeleton className="h-4 w-10 my-2 mb-1" />
-                    item.numbers
+                    <Skeleton className="h-4 w-10 my-2 mb-1" />
+                    // item.numbers
                   )}
                 </span>
                 <span className="text-muted-foreground text-center text-sm 2xl:text-base">
