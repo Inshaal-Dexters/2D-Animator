@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
       <body className={`${montserrat.className} ${roboto.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

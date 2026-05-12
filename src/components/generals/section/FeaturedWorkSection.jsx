@@ -82,7 +82,7 @@ const FeaturedWorkSection = () => {
                 return (
                   <div key={item.id} onClick={() => handleButtonClick(item.id)}>
                     <Button
-                      className={`w-full lg:w-fit cursor-pointer py-5 ${activeButton === item.id ? "bg-primary" : "bg-card hover:bg-card"}`}
+                      className={`w-full lg:w-fit cursor-pointer py-5 ${activeButton === item.id ? "bg-primary text-white" : " text-foreground bg-card hover:bg-card"}`}
                     >
                       <span className="line-clamp-1">{item.snippet.title}</span>
                     </Button>

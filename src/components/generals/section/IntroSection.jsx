@@ -48,12 +48,12 @@ const IntroSection = ({ user }) => {
           <div className="tags-area w-full flex items-center flex-wrap gap-2">
             {tags.map((item, index) => {
               return (
-                <div
+                <span
                   key={index}
-                  className="w-fit bg-primary/20 border border-primary/40 rounded-full py-1.5 md:py-2 px-2 md:px-5 text-white text-xs md:text-sm"
+                  className="w-fit bg-primary/20 border border-primary/40 rounded-full py-1.5 md:py-2 px-2 md:px-5 text-primary text-xs md:text-sm"
                 >
                   {item}
-                </div>
+                </span>
               );
             })}
           </div>
