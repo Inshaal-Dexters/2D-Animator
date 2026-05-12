@@ -17,7 +17,7 @@ const MuhammadBangloriaPage = () => {
   useEffect(() => {
     const handleFetchYTChannel = async () => {
       const res = await axios.get(
-        "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelId}&key=${channelKey}",
+        `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelId}&key=${channelKey}`,
       ).catch((err) => console.log(err));
       setUser(res.data.items[0]);
 
